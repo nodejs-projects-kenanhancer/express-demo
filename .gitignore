@@ -1,3 +1,7 @@
+dist
+distV2
+.idea
+
 # Logs
 logs
 *.log
