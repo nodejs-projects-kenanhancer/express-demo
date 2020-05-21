@@ -18,16 +18,9 @@ app.use(bodyParser.json()); // using bodyParser to parse JSON bodies into JS obj
 app.use(morgan('combined')); // adding morgan to log HTTP requests
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-// app.use(express.static('public'));
+app.use(express.static('public'));
 // app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/static', express.static(path.join(__dirname, 'public')));
-
-app.set("views", "views");
-app.set("view engine", "pug");
-
-app.get("/", (req, res) => {
-    res.render("index", {title: "Home"});
-});
 
 app.get("/homepage", (req, res) => {
     res.render("homepage", {
