@@ -7,11 +7,13 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node src/app",
     "start:srcV2": "node srcV2/app",
+    "start:srcV3": "node srcV3/app",
     "build:src": "npx babel src --out-dir dist --source-maps --delete-dir-on-start",
     "build:srcV2": "npx babel srcV2 --out-dir distV2 --source-maps --delete-dir-on-start",
     "watch": "nodemon src/app",
     "watch-babel:src": "nodemon --exec babel-node src/app",
-    "watch-babel:srcV2": "nodemon --exec babel-node srcV2/app"
+    "watch-babel:srcV2": "nodemon --exec babel-node srcV2/app",
+    "watch-babel:srcV3": "nodemon --exec babel-node srcV3/app"
   },
   "repository": {
     "type": "git",
@@ -25,6 +27,7 @@
   },
   "homepage": "https://github.com/nodejs-projects-kenanhancer/express-demo#readme",
   "dependencies": {
+    "@hapi/joi": "^17.1.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
