@@ -8,12 +8,14 @@
     "start": "node src/app",
     "start:srcV2": "node srcV2/app",
     "start:srcV3": "node srcV3/app",
+    "start:srcV4": "node srcV4/app",
     "build:src": "npx babel src --out-dir dist --source-maps --delete-dir-on-start",
     "build:srcV2": "npx babel srcV2 --out-dir distV2 --source-maps --delete-dir-on-start",
     "watch": "nodemon src/app",
     "watch-babel:src": "nodemon --exec babel-node src/app",
     "watch-babel:srcV2": "nodemon --exec babel-node srcV2/app",
-    "watch-babel:srcV3": "nodemon --exec babel-node srcV3/app"
+    "watch-babel:srcV3": "nodemon --exec babel-node srcV3/app",
+    "watch-babel:srcV4": "nodemon --exec babel-node srcV4/app"
   },
   "repository": {
     "type": "git",
@@ -32,7 +34,7 @@
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "helmet": "^3.22.0",
+    "helmet": "^3.22`.0",
     "morgan": "^1.10.0",
     "pug": "^2.0.4",
     "uuid": "^8.1.0"
@@ -43,6 +45,8 @@
     "@babel/node": "^7.8.7",
     "@babel/plugin-transform-runtime": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "nodemon": "^2.0.4"
   }
 }

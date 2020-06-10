@@ -1,5 +1,6 @@
 const express = require('express');
-const { validateTask } = require('./task-util');
+const { validateTask, isNumeric } = require('./util');
+const { tasks } = require("./model");
 
 const app = express();
 
@@ -7,36 +8,6 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-const tasks = [
-    {
-        id: 1,
-        name: "Task 1",
-        completed: false
-    },
-    {
-        id: 2,
-        name: "Task 2",
-        completed: false
-    },
-    {
-        id: 3,
-        name: "Task 3",
-        completed: false
-    }
-];
-
-const isNumeric = (value) => {
-    if (value.match(/^-{0,1}\d+$/)) {
-        //valid integer (positive or negative)
-        return true;
-    } else if (value.match(/^\d+\.\d+$/)) {
-        //valid float
-        return true;
-    } else {
-        //not valid number
-        return false;
-    }
-};
 
 
 // GET /api/tasks
@@ -91,7 +62,6 @@ app.put("/api/tasks/:id", (req, res) => {
 
     let task = tasks.find(task => task.id === taskId);
 
-
     if (!task) {
         return res.status(404).send("The task with the provided id does not exist");
     }
@@ -139,8 +109,28 @@ app.patch("/api/tasks/:id", (req, res) => {
 
 });
 
-// DELETE
+// DELETE /api/tasks/:id
+app.delete("/api/tasks/:id", (req, res) => {
+    let { id: taskId } = req.params;
 
+    taskId = isNumeric(taskId) && parseInt(taskId);
+
+    if (!taskId) {
+        return res.status(404).send("The provided id is not numeric");
+    }
+
+    const task = tasks.find(task => task.id === taskId);
+
+    if (!task) {
+        return res.status(400).send("The task with the provided id does not exists");
+    }
+
+    const index = tasks.indexOf(task);
+
+    tasks.splice(index, 1);
+
+    res.send(task);
+});
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
