@@ -4,19 +4,38 @@
   "description": "Express web framework demo for Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run test:unit",
     "start": "node src/app",
+    
     "start:srcV2": "node srcV2/app",
     "start:srcV3": "node srcV3/app",
     "start:srcV4": "node srcV4/app",
+    
     "build:src": "npx babel src --out-dir dist --source-maps --delete-dir-on-start",
     "build:srcV2": "npx babel srcV2 --out-dir distV2 --source-maps --delete-dir-on-start",
+    
     "watch": "nodemon src/app",
     "watch-babel:src": "nodemon --exec babel-node src/app",
     "watch-babel:srcV2": "nodemon --exec babel-node srcV2/app",
     "watch-babel:srcV3": "nodemon --exec babel-node srcV3/app",
     "watch-babel:srcV4": "nodemon --exec babel-node srcV4/app",
-    "test:unit": "mocha"
+
+    "test:unit": "mocha",
+    "test:unit:watch": "mocha --watch",
+    "test:unit:spec:style": "mocha --reporter spec",
+    "test:unit:dot:style": "mocha --reporter dot",
+    "test:unit:nyan:style": "mocha --reporter nyan",
+    "test:unit:tap:style": "mocha --reporter tap",
+    "test:unit:landing:style": "mocha --reporter landing",
+    "test:unit:list:style": "mocha --reporter list",
+    "test:unit:progress:style": "mocha --reporter progress",
+    "test:unit:json:style": "mocha --reporter json",
+    "test:unit:json-stream:style": "mocha --reporter json-stream",
+    "test:unit:min:style": "mocha --reporter min",
+    "test:unit:mochawesome:style": "mocha --reporter mochawesome --reporter-option reportDir=./test/reports/mochawesome-report",
+    "test:unit:xunit:style": "mocha --reporter xunit --reporter-option output=./test/reports/test-xunit.xml",
+    "test:unit:markdown:style": "mocha --reporter markdown | cat ./test/reports/docs/head.html - ./test/reports/docs/tail.html > ./test/reports/docs/test.html",
+    "test:unit:doc:style": "mocha --reporter=doc | cat docs/head.html - docs/tail.html > docs/test.html"
   },
   "repository": {
     "type": "git",
@@ -49,6 +68,7 @@
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "mocha": "^7.2.0",
+    "mochawesome": "^6.1.1",
     "nodemon": "^2.0.4"
   }
 }

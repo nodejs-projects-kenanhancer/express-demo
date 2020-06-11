@@ -2,29 +2,19 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../srcV4/app");
 
-const should = chai.should();
+const expect = chai.expect;
 chai.use(chaiHttp);
 
-describe("Books API", () => {
-
-    // Before/after setup
-
-    // before(() => console.log("Testing started – before all tests"));
-    // after(() => console.log("Testing finished – after all tests"));
-
-    // beforeEach(() => console.log("Before a test – enter a test"));
-    // afterEach(() => console.log("After a test – exit a test"));
+describe("Books with expect API", () => {
 
     describe("GET /api/books", () => {
         it("it should GET all the books", (done) => {
             chai.request(app)
                 .get("/api/books")
                 .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('array');
-                    // res.body.length.should.be.eql(4);
-                    //or
-                    res.body.should.have.length(5);
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.a('array');
+                    expect(res.body).to.have.lengthOf.above(1);
                     done();
                 });
         });
@@ -33,8 +23,8 @@ describe("Books API", () => {
             chai.request(app)
                 .get("/api/book")
                 .end((err, res) => {
-                    res.should.have.status(404);
-                    res.body.should.be.a('object');
+                    expect(res).to.have.status(404);
+                    expect(res.body).to.be.an('object');
                     done();
                 });
         });
@@ -54,20 +44,20 @@ describe("Books API", () => {
                 .post("/api/books")
                 .send(book)
                 .end((err, res) => {
-                    res.should.have.status(201);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('id').above(1);
-                    res.body.should.have.property('title');
-                    res.body.should.have.property('author');
-                    res.body.should.have.property('year');
-                    res.body.should.have.property('pages');
+                    expect(res).to.have.status(201);
+                    expect(res.body).to.be.a('object');
+                    expect(res.body).to.have.property('id').above(1);
+                    expect(res.body).to.have.property('title');
+                    expect(res.body).to.have.property('author');
+                    expect(res.body).to.have.property('year');
+                    expect(res.body).to.have.property('pages');
 
                     chai.request(app)
                         .get(`/api/books/${res.body.id}`)
                         .end((err2, res2) => {
-                            res2.should.have.status(200);
-                            res2.body.should.be.a('object');
-                            res2.body.should.deep.equal({ id: res.body.id, ...book });
+                            expect(res2).to.have.status(200);
+                            expect(res2.body).to.be.a('object');
+                            expect(res2.body).to.deep.equal({ id: res.body.id, ...book });
                             done();
                         });
                 });
@@ -84,8 +74,8 @@ describe("Books API", () => {
                 .post("/api/books")
                 .send(book)
                 .end((err, res) => {
-                    res.should.have.status(400);
-                    res.text.should.be.equal(`"pages" is required`);
+                    expect(res).to.have.status(400);
+                    expect(res.text).to.equal(`"pages" is required`);
 
                     done();
                 });
@@ -99,13 +89,13 @@ describe("Books API", () => {
             chai.request(app)
                 .get(`/api/books/${bookId}`)
                 .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('id').eql(bookId);
-                    res.body.should.have.property('title');
-                    res.body.should.have.property('author');
-                    res.body.should.have.property('year');
-                    res.body.should.have.property('pages');
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.a('object');
+                    expect(res.body).to.have.property('id').equal(bookId);
+                    expect(res.body).to.have.property('title').that.is.a('string');
+                    expect(res.body).to.have.property('author').that.is.an('string');
+                    expect(res.body).to.have.property('year').that.is.a('number');
+                    expect(res.body).to.have.property('pages').that.is.an('number');
                     done();
                 });
         });
@@ -116,8 +106,8 @@ describe("Books API", () => {
             chai.request(app)
                 .get(`/api/books/${bookId}`)
                 .end((err, res) => {
-                    res.should.have.status(404);
-                    res.body.should.be.a('object');
+                    expect(res).to.have.status(404);
+                    expect(res.body).to.be.a('object');
 
                     done();
                 });
@@ -140,16 +130,16 @@ describe("Books API", () => {
                 .put(`/api/books/${bookId}`)
                 .send(book)
                 .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.deep.equal({ id: bookId, ...book });
+                    expect(res).to.have.status(200);
+                    expect(res.body).to.be.a('object');
+                    expect(res.body).to.deep.equal({ id: bookId, ...book });
 
                     chai.request(app)
                         .get(`/api/books/${bookId}`)
                         .end((err2, res2) => {
-                            res2.should.have.status(200);
-                            res2.body.should.be.a('object');
-                            res2.body.should.deep.equal({ id: bookId, ...book });
+                            expect(res2).to.have.status(200);
+                            expect(res2.body).to.be.a('object');
+                            expect(res2.body).to.deep.equal({ id: bookId, ...book });
                             done();
                         });
                 });
@@ -188,24 +178,24 @@ describe("Books API", () => {
         });
     });
 
-    describe("DELETE /api/books/:id", (done) => {
-        it("it should DELETE a book given the id", (done) => {
-            const bookId = 1;
+    // describe("DELETE /api/books/:id", (done) => {
+    //     it("it should DELETE a book given the id", (done) => {
+    //         const bookId = 1;
 
-            chai.request(app)
-                .delete(`/api/books/${bookId}`)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a("object");
+    //         chai.request(app)
+    //             .delete(`/api/books/${bookId}`)
+    //             .end((err, res) => {
+    //                 res.should.have.status(200);
+    //                 res.body.should.be.a("object");
 
-                    chai.request(app)
-                        .get(`/api/books/${bookId}`)
-                        .end((err2, res2) => {
-                            res2.should.have.status(404);
-                            done();
-                        });
-                });
-        });
-    });
+    //                 chai.request(app)
+    //                     .get(`/api/books/${bookId}`)
+    //                     .end((err2, res2) => {
+    //                         res2.should.have.status(404);
+    //                         done();
+    //                     });
+    //             });
+    //     });
+    // });
 
 });

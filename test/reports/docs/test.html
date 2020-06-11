@@ -1,0 +1,922 @@
+Listening on port 3000
+# TOC
+   - [Books with expect API](#books-with-expect-api)
+     - [GET /api/books](#books-with-expect-api-get-apibooks)
+     - [POST /api/books](#books-with-expect-api-post-apibooks)
+     - [GET /api/books/:id](#books-with-expect-api-get-apibooksid)
+     - [PUT /api/books/:id](#books-with-expect-api-put-apibooksid)
+     - [PATCH /api/books/:id](#books-with-expect-api-patch-apibooksid)
+   - [Books API](#books-api)
+     - [GET /api/books](#books-api-get-apibooks)
+     - [POST /api/books](#books-api-post-apibooks)
+     - [GET /api/books/:id](#books-api-get-apibooksid)
+     - [PUT /api/books/:id](#books-api-put-apibooksid)
+     - [PATCH /api/books/:id](#books-api-patch-apibooksid)
+     - [DELETE /api/books/:id](#books-api-delete-apibooksid)
+   - [Customers API](#customers-api)
+     - [GET /api/customers](#customers-api-get-apicustomers)
+     - [POST /api/customers](#customers-api-post-apicustomers)
+     - [GET /api/customers/:id](#customers-api-get-apicustomersid)
+     - [PUT /api/customers/:id](#customers-api-put-apicustomersid)
+     - [DELETE /api/customers/:id](#customers-api-delete-apicustomersid)
+   - [Tasks API](#tasks-api)
+     - [GET /api/tasks](#tasks-api-get-apitasks)
+     - [POST /api/tasks](#tasks-api-post-apitasks)
+     - [GET /api/tasks/:id](#tasks-api-get-apitasksid)
+     - [PUT /api/tasks/:id](#tasks-api-put-apitasksid)
+     - [PATCH /api/tasks/:id](#tasks-api-patch-apitasksid)
+     - [DELETE /api/tasks/:id](#tasks-api-delete-apitasksid)
+   - [Users API](#users-api)
+     - [GET /api/users](#users-api-get-apiusers)
+     - [POST /api/users](#users-api-post-apiusers)
+     - [GET /api/users/:id](#users-api-get-apiusersid)
+     - [PUT /api/users/:id](#users-api-put-apiusersid)
+     - [DELETE /api/users/:id](#users-api-delete-apiusersid)
+<a name=""></a>
+ 
+<a name="books-with-expect-api"></a>
+# Books with expect API
+<a name="books-with-expect-api-get-apibooks"></a>
+## GET /api/books
+it should GET all the books.
+
+```js
+chai.request(app)
+    .get("/api/books")
+    .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.a('array');
+        expect(res.body).to.have.lengthOf.above(1);
+        done();
+    });
+```
+
+it should not GET all the books.
+
+```js
+chai.request(app)
+    .get("/api/book")
+    .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body).to.be.an('object');
+        done();
+    });
+```
+
+<a name="books-with-expect-api-post-apibooks"></a>
+## POST /api/books
+it should POST a new book.
+
+```js
+const book = {
+    // id: 1,
+    title: "Head First Python",
+    author: "Paul Barry",
+    year: 2016,
+    pages: 624
+};
+chai.request(app)
+    .post("/api/books")
+    .send(book)
+    .end((err, res) => {
+        expect(res).to.have.status(201);
+        expect(res.body).to.be.a('object');
+        expect(res.body).to.have.property('id').above(1);
+        expect(res.body).to.have.property('title');
+        expect(res.body).to.have.property('author');
+        expect(res.body).to.have.property('year');
+        expect(res.body).to.have.property('pages');
+        chai.request(app)
+            .get(`/api/books/${res.body.id}`)
+            .end((err2, res2) => {
+                expect(res2).to.have.status(200);
+                expect(res2.body).to.be.a('object');
+                expect(res2.body).to.deep.equal({ id: res.body.id, ...book });
+                done();
+            });
+    });
+```
+
+it should NOT POST a new book without pages field.
+
+```js
+const book = {
+    title: "Head First Learn to Code",
+    author: "Eric Freeman",
+    year: 2018
+};
+chai.request(app)
+    .post("/api/books")
+    .send(book)
+    .end((err, res) => {
+        expect(res).to.have.status(400);
+        expect(res.text).to.equal(`"pages" is required`);
+        done();
+    });
+```
+
+<a name="books-with-expect-api-get-apibooksid"></a>
+## GET /api/books/:id
+it should GET a book by the given id.
+
+```js
+const bookId = 1;
+chai.request(app)
+    .get(`/api/books/${bookId}`)
+    .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.a('object');
+        expect(res.body).to.have.property('id').equal(bookId);
+        expect(res.body).to.have.property('title').that.is.a('string');
+        expect(res.body).to.have.property('author').that.is.an('string');
+        expect(res.body).to.have.property('year').that.is.a('number');
+        expect(res.body).to.have.property('pages').that.is.an('number');
+        done();
+    });
+```
+
+it should NOT GET a book by the given id.
+
+```js
+const bookId = 38;
+chai.request(app)
+    .get(`/api/books/${bookId}`)
+    .end((err, res) => {
+        expect(res).to.have.status(404);
+        expect(res.body).to.be.a('object');
+        done();
+    });
+```
+
+<a name="books-with-expect-api-put-apibooksid"></a>
+## PUT /api/books/:id
+it should REPLACE a book given the id.
+
+```js
+const bookId = 1;
+const book = {
+    // id: 1,
+    title: "Head First C",
+    author: "David Griffiths, Dawn Griffiths",
+    year: 2012,
+    pages: 632
+};
+chai.request(app)
+    .put(`/api/books/${bookId}`)
+    .send(book)
+    .end((err, res) => {
+        expect(res).to.have.status(200);
+        expect(res.body).to.be.a('object');
+        expect(res.body).to.deep.equal({ id: bookId, ...book });
+        chai.request(app)
+            .get(`/api/books/${bookId}`)
+            .end((err2, res2) => {
+                expect(res2).to.have.status(200);
+                expect(res2.body).to.be.a('object');
+                expect(res2.body).to.deep.equal({ id: bookId, ...book });
+                done();
+            });
+    });
+```
+
+<a name="books-with-expect-api-patch-apibooksid"></a>
+## PATCH /api/books/:id
+it should UPDATE a book given the id.
+
+```js
+const bookId = 1;
+const book = {
+    // id: 1,
+    title: "Head First C",
+    author: "David Griffiths, Dawn Griffiths",
+    year: 2012,
+    pages: 632
+};
+chai.request(app)
+    .patch(`/api/books/${bookId}`)
+    .send(book)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({ id: bookId, ...book });
+        chai.request(app)
+            .get(`/api/books/${bookId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: bookId, ...book });
+                done();
+            });
+    });
+```
+
+<a name="books-api"></a>
+# Books API
+<a name="books-api-get-apibooks"></a>
+## GET /api/books
+it should GET all the books.
+
+```js
+chai.request(app)
+    .get("/api/books")
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('array');
+        // res.body.length.should.be.eql(4);
+        //or
+        res.body.should.have.length(5);
+        done();
+    });
+```
+
+it should not GET all the books.
+
+```js
+chai.request(app)
+    .get("/api/book")
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        done();
+    });
+```
+
+<a name="books-api-post-apibooks"></a>
+## POST /api/books
+it should POST a new book.
+
+```js
+const book = {
+    // id: 1,
+    title: "Head First Python",
+    author: "Paul Barry",
+    year: 2016,
+    pages: 624
+};
+chai.request(app)
+    .post("/api/books")
+    .send(book)
+    .end((err, res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').above(1);
+        res.body.should.have.property('title');
+        res.body.should.have.property('author');
+        res.body.should.have.property('year');
+        res.body.should.have.property('pages');
+        chai.request(app)
+            .get(`/api/books/${res.body.id}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: res.body.id, ...book });
+                done();
+            });
+    });
+```
+
+it should NOT POST a new book without pages field.
+
+```js
+const book = {
+    title: "Head First Learn to Code",
+    author: "Eric Freeman",
+    year: 2018
+};
+chai.request(app)
+    .post("/api/books")
+    .send(book)
+    .end((err, res) => {
+        res.should.have.status(400);
+        res.text.should.be.equal(`"pages" is required`);
+        done();
+    });
+```
+
+<a name="books-api-get-apibooksid"></a>
+## GET /api/books/:id
+it should GET a book by the given id.
+
+```js
+const bookId = 1;
+chai.request(app)
+    .get(`/api/books/${bookId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').eql(bookId);
+        res.body.should.have.property('title');
+        res.body.should.have.property('author');
+        res.body.should.have.property('year');
+        res.body.should.have.property('pages');
+        done();
+    });
+```
+
+it should NOT GET a book by the given id.
+
+```js
+const bookId = 38;
+chai.request(app)
+    .get(`/api/books/${bookId}`)
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        done();
+    });
+```
+
+<a name="books-api-put-apibooksid"></a>
+## PUT /api/books/:id
+it should REPLACE a book given the id.
+
+```js
+const bookId = 1;
+const book = {
+    // id: 1,
+    title: "Head First C",
+    author: "David Griffiths, Dawn Griffiths",
+    year: 2012,
+    pages: 632
+};
+chai.request(app)
+    .put(`/api/books/${bookId}`)
+    .send(book)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({ id: bookId, ...book });
+        chai.request(app)
+            .get(`/api/books/${bookId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: bookId, ...book });
+                done();
+            });
+    });
+```
+
+<a name="books-api-patch-apibooksid"></a>
+## PATCH /api/books/:id
+it should UPDATE a book given the id.
+
+```js
+const bookId = 1;
+const book = {
+    // id: 1,
+    title: "Head First C",
+    author: "David Griffiths, Dawn Griffiths",
+    year: 2012,
+    pages: 632
+};
+chai.request(app)
+    .patch(`/api/books/${bookId}`)
+    .send(book)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({ id: bookId, ...book });
+        chai.request(app)
+            .get(`/api/books/${bookId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: bookId, ...book });
+                done();
+            });
+    });
+```
+
+<a name="books-api-delete-apibooksid"></a>
+## DELETE /api/books/:id
+it should DELETE a book given the id.
+
+```js
+const bookId = 1;
+chai.request(app)
+    .delete(`/api/books/${bookId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        chai.request(app)
+            .get(`/api/books/${bookId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(404);
+                done();
+            });
+    });
+```
+
+<a name="customers-api"></a>
+# Customers API
+<a name="customers-api-get-apicustomers"></a>
+## GET /api/customers
+it should GET all the customers.
+
+```js
+requester
+    .get("/api/customers")
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('array');
+        res.body.length.should.be.above(1);
+        done();
+    });
+```
+
+it should not GET all the customers.
+
+```js
+requester
+    .get("/api/customer")
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({});
+        done();
+    });
+```
+
+<a name="customers-api-post-apicustomers"></a>
+## POST /api/customers
+it should POST a new customer.
+
+```js
+const customer = {
+    // id: 1,
+    firstName: "Haydar",
+    lastName: "Bas",
+    age: 55
+};
+requester
+    .post("/api/customers")
+    .send(customer)
+    .end((err, res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').above(1);
+        res.body.should.have.property('firstName');
+        res.body.should.have.property('lastName');
+        res.body.should.have.property('age');
+        requester
+            .get(`/api/customers/${res.body.id}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal(res.body);
+                done();
+            });
+    });
+```
+
+it should NOT POST a new customer without age field.
+
+```js
+const customer = {
+    // id: 1,
+    firstName: "Kadir",
+    lastName: "Tatar"
+};
+requester
+    .post("/api/customers")
+    .send(customer)
+    .end((err, res) => {
+        res.should.have.status(400);
+        res.text.should.be.equal(`"age" is required`)
+        done();
+    });
+```
+
+<a name="customers-api-get-apicustomersid"></a>
+## GET /api/customers/:id
+it should GET a customer by the given id.
+
+```js
+const customerId = 1;
+requester
+    .get(`/api/customers/${customerId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').eql(customerId);
+        res.body.should.have.property('firstName');
+        res.body.should.have.property('lastName');
+        res.body.should.have.property('age');
+        done();
+    });
+```
+
+it should NOT GET a customer by the given id.
+
+```js
+const customerId = 38;
+requester
+    .get(`/api/customers/${customerId}`)
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        done();
+    });
+```
+
+<a name="customers-api-put-apicustomersid"></a>
+## PUT /api/customers/:id
+it should REPLACE a customer given the id.
+
+```js
+const customerId = 1;
+const customer = {
+    // id: 1,
+    firstName: "Yakup",
+    lastName: "Balta",
+    age: 37
+};
+requester
+    .put(`/api/customers/${customerId}`)
+    .send(customer)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({ id: customerId, ...customer });
+        requester
+            .get(`/api/customers/${customerId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: customerId, ...res.body });
+                done();
+            });
+    });
+```
+
+<a name="customers-api-delete-apicustomersid"></a>
+## DELETE /api/customers/:id
+it should DELETE a customer given the id.
+
+```js
+const customerId = 1;
+requester
+    .delete(`/api/customers/${customerId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        requester
+            .get(`/api/customers/${customerId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(404);
+                done();
+            });
+    });
+```
+
+<a name="tasks-api"></a>
+# Tasks API
+<a name="tasks-api-get-apitasks"></a>
+## GET /api/tasks
+it should GET all the tasks.
+
+```js
+requester
+    .get("/api/tasks")
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('array');
+        res.body.length.should.be.above(1);
+        done();
+    });
+```
+
+it should not GET all the tasks.
+
+```js
+requester
+    .get("/api/task")
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({});
+        done();
+    });
+```
+
+<a name="tasks-api-post-apitasks"></a>
+## POST /api/tasks
+it should POST a new task.
+
+```js
+const task = {
+    // id: 1,
+    name: "Task 4",
+    completed: false
+};
+requester
+    .post("/api/tasks")
+    .send(task)
+    .end((err, res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').above(1);
+        res.body.should.have.property('name');
+        res.body.should.have.property('completed').equal(false);
+        requester
+            .get(`/api/tasks/${res.body.id}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: res.body.id, ...task });
+                done();
+            })
+    });
+```
+
+it should NOT POST a new task without completed field.
+
+```js
+const task = {
+    name: "Task 5"
+};
+requester
+    .post("/api/tasks")
+    .send(task)
+    .end((err, res) => {
+        res.should.have.status(400);
+        res.text.should.be.equal(`"completed" is required`)
+        done();
+    });
+```
+
+<a name="tasks-api-get-apitasksid"></a>
+## GET /api/tasks/:id
+it should GET a task by the given id.
+
+```js
+const taskId = 1;
+requester
+    .get(`/api/tasks/${taskId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').eql(taskId);
+        res.body.should.have.property('name');
+        res.body.should.have.property('completed');
+        done();
+    });
+```
+
+it should NOT GET a task by the given id.
+
+```js
+const taskId = 38;
+requester
+    .get(`/api/tasks/${taskId}`)
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        done();
+    });
+```
+
+<a name="tasks-api-put-apitasksid"></a>
+## PUT /api/tasks/:id
+it should REPLACE a task given the id.
+
+```js
+const taskId = 1;
+const task = {
+    // id: 1,
+    name: "Task 4",
+    completed: false
+};
+requester
+    .put(`/api/tasks/${taskId}`)
+    .send(task)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({ id: taskId, ...task });
+        done();
+    });
+```
+
+<a name="tasks-api-patch-apitasksid"></a>
+## PATCH /api/tasks/:id
+it should UPDATE a task given the id.
+
+```js
+const taskId = 1;
+const task = {
+    // id: 1,
+    name: "Task 4",
+    completed: false
+};
+requester
+    .patch(`/api/tasks/${taskId}`)
+    .send(task)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({ id: taskId, ...task });
+        requester
+            .get(`/api/tasks/${taskId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: taskId, ...res.body });
+                done();
+            });
+    });
+```
+
+<a name="tasks-api-delete-apitasksid"></a>
+## DELETE /api/tasks/:id
+it should DELETE a task given the id.
+
+```js
+const taskId = 1;
+requester
+    .delete(`/api/tasks/${taskId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        requester
+            .get(`/api/tasks/${taskId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(404);
+                done();
+            });
+    });
+```
+
+<a name="users-api"></a>
+# Users API
+<a name="users-api-get-apiusers"></a>
+## GET /api/users
+it should GET all the users.
+
+```js
+requester
+    .get("/api/users")
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('array');
+        res.body.length.should.be.above(1);
+        done();
+    });
+```
+
+it should not GET all the users.
+
+```js
+requester
+    .get("/api/user")
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({});
+        done();
+    });
+```
+
+<a name="users-api-post-apiusers"></a>
+## POST /api/users
+it should POST a new user.
+
+```js
+const user = {
+    // id: 1,
+    firstName: "Taner",
+    lastName: "Yildirim",
+    mail: "ty@hotmail.com",
+    userName: "taneryildirim",
+    password: "383843"
+};
+requester
+    .post("/api/users")
+    .send(user)
+    .end((err, res) => {
+        res.should.have.status(201);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').above(1);
+        res.body.should.have.property('firstName');
+        res.body.should.have.property('lastName');
+        res.body.should.have.property('mail');
+        res.body.should.have.property('userName');
+        res.body.should.have.property('password');
+        requester
+            .get(`/api/users/${res.body.id}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal(res.body);
+                done();
+            });
+    });
+```
+
+it should NOT POST a new user without password field.
+
+```js
+const user = {
+    // id: 1,
+    firstName: "Taner",
+    lastName: "Yildirim",
+    mail: "ty@hotmail.com",
+    userName: "taneryildirim"
+};
+requester
+    .post("/api/users")
+    .send(user)
+    .end((err, res) => {
+        res.should.have.status(400);
+        res.text.should.be.equal(`"password" is required`)
+        done();
+    });
+```
+
+<a name="users-api-get-apiusersid"></a>
+## GET /api/users/:id
+it should GET a user by the given id.
+
+```js
+const userId = 1;
+requester
+    .get(`/api/users/${userId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.have.property('id').eql(userId);
+        res.body.should.have.property('firstName');
+        res.body.should.have.property('lastName');
+        res.body.should.have.property('mail');
+        res.body.should.have.property('userName');
+        res.body.should.have.property('password');
+        done();
+    });
+```
+
+it should NOT GET a user by the given id.
+
+```js
+const userId = 38;
+requester
+    .get(`/api/users/${userId}`)
+    .end((err, res) => {
+        res.should.have.status(404);
+        res.body.should.be.a('object');
+        done();
+    });
+```
+
+<a name="users-api-put-apiusersid"></a>
+## PUT /api/users/:id
+it should REPLACE a user given the id.
+
+```js
+const userId = 1;
+const user = {
+    // id: 1,
+    firstName: "Hakki",
+    lastName: "Cloud",
+    mail: "hc@hotmail.com",
+    userName: "hakkicloud",
+    password: "883322"
+};
+requester
+    .put(`/api/users/${userId}`)
+    .send(user)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a('object');
+        res.body.should.deep.equal({ id: userId, ...user });
+        requester
+            .get(`/api/users/${userId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(200);
+                res2.body.should.be.a('object');
+                res2.body.should.deep.equal({ id: userId, ...res.body });
+                done();
+            });
+    });
+```
+
+<a name="users-api-delete-apiusersid"></a>
+## DELETE /api/users/:id
+it should DELETE a user given the id.
+
+```js
+const userId = 1;
+requester
+    .delete(`/api/users/${userId}`)
+    .end((err, res) => {
+        res.should.have.status(200);
+        res.body.should.be.a("object");
+        requester
+            .get(`/api/users/${userId}`)
+            .end((err2, res2) => {
+                res2.should.have.status(404);
+                done();
+            });
+    });
+```
+
