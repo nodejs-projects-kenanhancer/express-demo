@@ -1,6 +1,6 @@
 const { books } = require("../models");
-const { validateBook, isNumeric } = require("../util");
-
+const { isNumeric } = require("../helpers/util");
+const { validateBook } = require("../validators/book-validator");
 /*
  * GET /api/books to retrieve all the books
  */
@@ -15,14 +15,14 @@ const postBook = (req, res) => {
     const { error, value: body } = validateBook(req.body);
 
     if (error) {
-        return res.status(404).send(error.message);
+        return res.status(400).send(error.message);
     }
 
     const newBook = { id: books.length + 1, ...body };
 
     books.push(newBook);
 
-    res.send(newBook);
+    res.status(201).send(newBook);
 };
 
 /*
@@ -100,7 +100,6 @@ const updateBook = (req, res) => {
     }
 
     book.title = body.title;
-    book.author = body.author;
     book.author = body.author;
     book.year = body.year;
     book.pages = body.pages;

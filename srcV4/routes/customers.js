@@ -1,5 +1,5 @@
-const customersController = require("../controllers/customers");
-const { validateCustomer } = require("../util");
+const customersController = require("../controllers/customers")({});
+const { validateCustomer } = require("../validators/customer-validator");
 
 module.exports = (app) => {
 
@@ -10,7 +10,7 @@ module.exports = (app) => {
             const { error } = validateCustomer(req.body);
 
             if (error) {
-                return res.send(error.message);
+                return res.status(400).send(error.message);
             }
         }
 

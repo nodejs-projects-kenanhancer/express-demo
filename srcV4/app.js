@@ -37,11 +37,10 @@ app.use("/api/books", bookRouter);
 
 // Error Handler
 app.use((err, req, res, next) => {
-
-    res.send(err.message);
+    res.status(err.statusCode).send(err.message);
 });
 
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+const server = app.listen(port, () => console.log(`Listening on port ${port}`));
 
-module.exports = app;
+module.exports = server;

@@ -1,5 +1,6 @@
 const { tasks } = require("../models");
-const { validateTask, isNumeric } = require("../util");
+const { isNumeric } = require("../helpers/util");
+const { validateTask } = require("../validators/task-validator");
 
 module.exports = (app) => {
 
@@ -14,7 +15,7 @@ module.exports = (app) => {
     app.route("/api/tasks")
         // middleware that is specific to this router
         .all((req, res, next) => {
-            console.log("*** Tasks middleware time is ", Date.now());
+            // console.log("*** Tasks middleware time is ", Date.now());
             next();
         })
         .get((req, res) => {
@@ -31,7 +32,7 @@ module.exports = (app) => {
 
             tasks.push(newTask);
 
-            res.send(newTask);
+            res.status(201).send(newTask);
         });
 
 
@@ -46,7 +47,7 @@ module.exports = (app) => {
             taskId = isNumeric(taskId) && parseInt(taskId);
 
             if (!taskId) {
-                return res.status(404).send("The provided id is not numeric");
+                return res.status(400).send("The provided id is not numeric");
             }
 
             const task = tasks.find(task => task.id === taskId);

@@ -1,13 +1,14 @@
 const express = require("express");
 const { users } = require("../models");
-const { validateUser, isNumeric } = require("../util");
+const { isNumeric } = require("../helpers/util");
+const { validateUser } = require("../validators/user-validator");
 
 module.exports = () => {
     const userRouter = express.Router();
 
     // middleware that is specific to this router
     userRouter.use(function timeLog(req, res, next) {
-        console.log('Time: ', Date.now());
+        // console.log('Time: ', Date.now());
         next();
     });
 
@@ -47,7 +48,7 @@ module.exports = () => {
 
         users.push(newUser);
 
-        res.send(newUser);
+        res.status(201).send(newUser);
     });
 
     // PUT /api/users/:id
@@ -75,11 +76,6 @@ module.exports = () => {
         Object.assign(user, body);
 
         res.json(user);
-    });
-
-    // PATCH /api/users/:id
-    userRouter.patch("/:id", (req, res) => {
-        
     });
 
     // DELETE /api/users/:id

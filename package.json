@@ -15,7 +15,8 @@
     "watch-babel:src": "nodemon --exec babel-node src/app",
     "watch-babel:srcV2": "nodemon --exec babel-node srcV2/app",
     "watch-babel:srcV3": "nodemon --exec babel-node srcV3/app",
-    "watch-babel:srcV4": "nodemon --exec babel-node srcV4/app"
+    "watch-babel:srcV4": "nodemon --exec babel-node srcV4/app",
+    "test:unit": "mocha"
   },
   "repository": {
     "type": "git",
@@ -47,6 +48,7 @@
     "@babel/preset-env": "^7.9.6",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
+    "mocha": "^7.2.0",
     "nodemon": "^2.0.4"
   }
 }
