@@ -25,4 +25,4 @@ var customers = [
     }
 ];
 
-module.exports = { customers };
+module.exports.customersProvider = () => customers;

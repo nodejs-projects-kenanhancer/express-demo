@@ -1,6 +1,6 @@
-const { users } = require("./users");
-const { tasks } = require("./tasks");
-const { books } = require("./books");
-const { customers } = require("./customers");
+const { usersProvider } = require("./users");
+const { tasksProvider } = require("./tasks");
+const { booksProvider } = require("./books");
+const { customersProvider } = require("./customers");
 
-module.exports = { users, tasks, books, customers };
+module.exports = { usersProvider, tasksProvider, booksProvider, customersProvider };

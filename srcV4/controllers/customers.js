@@ -1,5 +1,5 @@
 module.exports = ({
-    customers = require("../models").customers,
+    customers = require("../models").customersProvider(),
     isNumeric = require("../helpers/util").isNumeric,
     createError = require("../helpers/util").createError,
     errors = require("../constants/errors")

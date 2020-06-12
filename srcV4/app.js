@@ -40,7 +40,10 @@ app.use((err, req, res, next) => {
     res.status(err.statusCode).send(err.message);
 });
 
-
 const server = app.listen(port, () => console.log(`Listening on port ${port}`));
+
+server.on("close", () => {
+    console.log('Http server closed.');
+});
 
 module.exports = server;

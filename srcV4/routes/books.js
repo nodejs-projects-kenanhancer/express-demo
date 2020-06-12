@@ -1,6 +1,8 @@
-const { books } = require("../models");
+const { booksProvider } = require("../models");
 const { isNumeric } = require("../helpers/util");
 const { validateBook } = require("../validators/book-validator");
+
+let books = booksProvider();
 /*
  * GET /api/books to retrieve all the books
  */

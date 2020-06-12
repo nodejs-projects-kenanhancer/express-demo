@@ -25,4 +25,4 @@ const users = [
     }
 ];
 
-module.exports = { users };
+module.exports.usersProvider = () => users;

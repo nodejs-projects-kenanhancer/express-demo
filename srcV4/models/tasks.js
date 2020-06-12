@@ -16,4 +16,4 @@ const tasks = [
     }
 ];
 
-module.exports = { tasks };
+module.exports.tasksProvider = () => tasks;

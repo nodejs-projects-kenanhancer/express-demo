@@ -30,4 +30,4 @@ const books = [
 ];
 
 
-module.exports = { books };
+module.exports.booksProvider = () => books;

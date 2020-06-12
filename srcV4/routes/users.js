@@ -1,11 +1,13 @@
 const express = require("express");
-const { users } = require("../models");
+const { usersProvider } = require("../models");
 const { isNumeric } = require("../helpers/util");
 const { validateUser } = require("../validators/user-validator");
 
 module.exports = () => {
     const userRouter = express.Router();
 
+    let users = usersProvider();
+    
     // middleware that is specific to this router
     userRouter.use(function timeLog(req, res, next) {
         // console.log('Time: ', Date.now());

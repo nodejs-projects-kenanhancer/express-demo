@@ -1,4 +1,4 @@
-const { tasks } = require("../models");
+const { tasksProvider } = require("../models");
 const { isNumeric } = require("../helpers/util");
 const { validateTask } = require("../validators/task-validator");
 
@@ -11,6 +11,8 @@ module.exports = (app) => {
     //     console.log("Tasks middleware time is ", Date.now());
     //     next();
     // });
+
+    let tasks = tasksProvider();
 
     app.route("/api/tasks")
         // middleware that is specific to this router
