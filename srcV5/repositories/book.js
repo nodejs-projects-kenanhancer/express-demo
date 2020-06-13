@@ -1,0 +1,1 @@
+module.exports = ({ dataSource = require('./bookMongodb') }) => dataSource();

@@ -50,6 +50,24 @@
             ]
         },
         {
+            "type": "node",
+            "request": "launch",
+            "name": "nodemon srcV5",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "nodemon",
+                "--exec",
+                "babel-node",
+                "srcV5/app"
+            ],
+            "restart": true,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
+        },
+        {
             "name": "Docker Node.js Launch",
             "type": "docker",
             "request": "launch",
