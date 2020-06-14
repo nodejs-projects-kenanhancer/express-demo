@@ -2,7 +2,7 @@ const express = require('express');
 
 const mongoose = require('mongoose');
 
-const customerRouter = require('./routes/customers');
+const bookRouter = require('./routes/book');
 
 const app = express();
 
@@ -25,11 +25,11 @@ db.on('error', err => console.error('connection error:', err));
 
 app.use(express.json());
 
-customerRouter({ app });
+bookRouter({ app });
 
 // Error Handler
 app.use((err, req, res, next) => {
-    res.status(err.statusCode).send(err.message);
+    res.status(err.statusCode || 500).send(err.message);
 });
 
 const server = app.listen(port, () => console.log(`Listening on port ${port}`));

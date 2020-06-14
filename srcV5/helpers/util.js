@@ -20,11 +20,30 @@ const createError = ({ code, statusCode, message }) => {
 };
 
 const catchAsync = fn => {
-    fn(req, res, next).catch(err => next(err));
+    return (req, res, next) => {
+        fn(req, res, next).catch(err => next(err));
+    };
 };
+
+const tryCatch = function (fn) {
+    return function () {
+        try {
+            const result = fn.apply(this, arguments);
+
+            if (result instanceof Promise) {
+                return result
+            }
+        } catch (err) {
+            // customErrorHandler(err);
+            return err
+        }
+    }
+}
+
 
 module.exports = {
     isNumeric,
     createError,
-    catchAsync
+    catchAsync,
+    tryCatch
 };

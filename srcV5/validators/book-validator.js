@@ -7,4 +7,4 @@ const bookSchema = Joi.object({
     pages: Joi.number().required()
 });
 
-module.exports.validateBook = (task) => bookSchema.validate(task)
+module.exports = (book) => bookSchema.validate(book)
