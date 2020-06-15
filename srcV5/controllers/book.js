@@ -12,7 +12,9 @@ module.exports = ({
 
             return book;
         },
-        create: async ({ body }) => await books.create(body),
+        create: async ({ body }) => {
+            await books.create(body);
+        },
         update: async ({ id, body }) => {
             const book = await books.find(id);
 

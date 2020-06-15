@@ -1,0 +1,26 @@
+{
+    "mysqlDs": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "database": "expressDemo",
+        "password": "",
+        "name": "mysqlDs",
+        "user": "root"
+    },
+    "mongodbDs": {
+        "host": "127.0.0.1",
+        "port": 27017,
+        "database": "expressDemo",
+        "password": "",
+        "name": "mongodbDs",
+        "user": "",
+        "useNewUrlParser": true
+    },
+    "redisDs": {
+        "host": "127.0.0.1",
+        "port": 6379,
+        "password": "",
+        "name": "redisDS",
+        "database": 0
+    }
+}

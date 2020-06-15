@@ -1,27 +1,13 @@
 const express = require('express');
 
-const mongoose = require('mongoose');
+require('./dataSources/mongoDS');
+require('./dataSources/redisDS');
 
 const bookRouter = require('./routes/book');
 
 const app = express();
 
 const port = process.env.PORT || 3000;
-
-
-
-const url = 'mongodb://127.0.0.1:27017/mongo-test-database';
-
-mongoose.connect(url, { useNewUrlParser: true });
-
-const db = mongoose.connection;
-
-db.once('open', _ => console.log('Database connected:', url));
-
-db.on('error', err => console.error('connection error:', err));
-
-
-
 
 app.use(express.json());
 

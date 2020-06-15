@@ -1,7 +1,9 @@
 const { model, Schema, Types: { ObjectId } } = require('mongoose');
+const string = require('@hapi/joi/lib/types/string');
 
 const BookSchema = new Schema(
     {
+        id: { type: string, required: true, unique: true },
         title: { type: String, required: true },
         author: { type: String, required: true },
         year: { type: Number, required: true },
@@ -16,26 +18,26 @@ const BookSchema = new Schema(
 );
 
 // Sets the createdAt parameter equal to the current time
-BookSchema.pre("save", function (next) {
-    let now = Date.now();
+// BookSchema.pre("save", function (next) {
+//     let now = Date.now();
 
-    this.updatedAt = now;
+//     this.updatedAt = now;
 
-    // Set a value for createdAt only if it is null
-    if (!this.createdAt) {
-        this.createdAt = now;
-    }
+//     // Set a value for createdAt only if it is null
+//     if (!this.createdAt) {
+//         this.createdAt = now;
+//     }
 
-    next();
-});
+//     next();
+// });
 
 const BookModel = model('book', BookSchema);
 
 module.exports = () => ({
     find: async (id) => await BookModel.findById(id),
-    exists: async (id) => await BookModel.exists({ _id: id }),
-    update: async (id, data) => await BookModel.updateOne({ _id: id }, data),
-    delete: async (id) => await BookModel.deleteOne({ _id: id }),
+    exists: async (id) => await BookModel.exists({ id }),
+    update: async (id, data) => await BookModel.updateOne({ id }, data),
+    delete: async (id) => await BookModel.deleteOne({ id }),
     create: async (data) => {
         const model = new BookModel(data);
 
